@@ -1,12 +1,12 @@
 ---
 - name: Deploy ArgoCD on Minikube using Ansible
-  hosts: localhost
+  hosts: serverA
   become: true
   tasks:
 
     - name: Ensure Minikube is started
       shell: |
-        minikube status || minikube start --driver=docker
+        minikube start --driver=docker
       args:
         executable: /bin/bash
 
