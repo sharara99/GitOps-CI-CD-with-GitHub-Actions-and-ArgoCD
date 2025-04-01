@@ -1,28 +1,25 @@
 ---
-- name: Deploy ArgoCD on Minikube using Ansible
+- name: GitOps with ArgoCD on Minikube
   hosts: serverA
   become: true
   tasks:
 
-    - name: Ensure Minikube is started
-      shell: |
-        minikube start --driver=docker
-      args:
-        executable: /bin/bash
-
-    - name: Clone the GitOps repository
+    - name: Clone GitHub Repository
       git:
-        repo: "https://github.com/sharara99/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD.git"
-        dest: "~/GitOps-CI-CD"
+        repo: 'https://github.com/abdelrahmanonline4/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD.git'
+        dest: '/tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD'
         clone: yes
         update: yes
 
-    - name: Deploy ArgoCD on Minikube
-      shell: ./deploy-argocd-minikube.sh
-      args:
-        chdir: "~/GitOps-CI-CD/k8s/helm/ArgoCD"
+    - name: Change to ArgoCD setup directory
+      command: chdir=/tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
 
-    - name: Apply ArgoCD application manifest
-      shell: kubectl apply -f argocd-app.yaml
+    - name: Run deploy-argocd-minikube.sh to install ArgoCD
+      command: ./deploy-argocd-minikube.sh
       args:
-        chdir: "~/GitOps-CI-CD/k8s/helm/ArgoCD"
+        chdir: /tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
+
+    - name: Apply ArgoCD App YAML to create app
+      command: kubectl apply -f k8s/helm/ArgoCD/argocd-app.yaml
+      args:
+        chdir: /tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD
