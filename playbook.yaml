@@ -12,14 +12,21 @@
 
     - name: Clone GitHub Repository
       git:
-        repo: 'https://github.com/abdelrahmanonline4/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD.git'
+        repo: 'https://github.com/sharara99/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD.git'
         dest: '/home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD'
         clone: yes
         update: yes
         force: yes
 
-    - name: Change to ArgoCD setup directory
-      command: chdir=/home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
+    - name: Check if ArgoCD setup directory exists
+      stat:
+        path: "/home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD"
+      register: argo_cd_directory
+
+    - name: Fail if ArgoCD setup directory doesn't exist
+      fail:
+        msg: "ArgoCD setup directory not found!"
+      when: not argo_cd_directory.stat.exists
 
     - name: Run deploy-argocd-minikube.sh to install ArgoCD
       command: ./deploy-argocd-minikube.sh
