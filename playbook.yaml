@@ -1,0 +1,28 @@
+---
+- name: Deploy ArgoCD on Minikube using Ansible
+  hosts: localhost
+  become: true
+  tasks:
+
+    - name: Ensure Minikube is started
+      shell: |
+        minikube status || minikube start --driver=docker
+      args:
+        executable: /bin/bash
+
+    - name: Clone the GitOps repository
+      git:
+        repo: "https://github.com/sharara99/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD.git"
+        dest: "~/GitOps-CI-CD"
+        clone: yes
+        update: yes
+
+    - name: Deploy ArgoCD on Minikube
+      shell: ./deploy-argocd-minikube.sh
+      args:
+        chdir: "~/GitOps-CI-CD/k8s/helm/ArgoCD"
+
+    - name: Apply ArgoCD application manifest
+      shell: kubectl apply -f argocd-app.yaml
+      args:
+        chdir: "~/GitOps-CI-CD/k8s/helm/ArgoCD"
