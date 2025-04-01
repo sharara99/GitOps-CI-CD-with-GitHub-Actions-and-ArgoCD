@@ -4,22 +4,29 @@
   become: true
   tasks:
 
+    - name: Clean the GitOps directory if it exists
+      file:
+        path: '/home/ansible/learn'
+        state: absent
+      ignore_errors: true
+
     - name: Clone GitHub Repository
       git:
         repo: 'https://github.com/abdelrahmanonline4/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD.git'
-        dest: '/tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD'
+        dest: '/home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD'
         clone: yes
         update: yes
+        force: yes
 
     - name: Change to ArgoCD setup directory
-      command: chdir=/tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
+      command: chdir=/home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
 
     - name: Run deploy-argocd-minikube.sh to install ArgoCD
       command: ./deploy-argocd-minikube.sh
       args:
-        chdir: /tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
+        chdir: /home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD/k8s/helm/ArgoCD
 
     - name: Apply ArgoCD App YAML to create app
       command: kubectl apply -f k8s/helm/ArgoCD/argocd-app.yaml
       args:
-        chdir: /tmp/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD
+        chdir: /home/ansible/learn/GitOps-CI-CD-with-GitHub-Actions-and-ArgoCD
